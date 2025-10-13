@@ -1,0 +1,8 @@
+# Add one package per line
+# Example packages:
+git
+wget
+curl
+fish
+htop
+neovim
