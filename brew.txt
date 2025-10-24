@@ -6,3 +6,6 @@ curl
 fish
 htop
 neovim
+scroll-reverser
+tmux
+tmuxp
