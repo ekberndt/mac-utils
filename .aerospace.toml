@@ -18,7 +18,7 @@ enable-normalization-opposite-orientation-for-nested-containers = true
 accordion-padding = 30
 
 # Possible values: tiles|accordion
-default-root-container-layout = 'tiles'
+default-root-container-layout = 'accordion'
 
 # Possible values: horizontal|vertical|auto
 # 'auto' means: wide monitor (anything wider than high) gets horizontal orientation,
@@ -42,7 +42,7 @@ automatically-unhide-macos-hidden-apps = false
 [key-mapping]
     preset = 'qwerty'
 
-# Gaps between windows (inner-*) and between monitor edges (outer-*).
+# Gaps between windows (inner-*) and between monitor edges (outer-*)
 # Possible values:
 # - Constant:     gaps.outer.top = 8
 # - Per monitor:  gaps.outer.top = [{ monitor.main = 16 }, { monitor."some-pattern" = 32 }, 24]
@@ -63,7 +63,6 @@ automatically-unhide-macos-hidden-apps = false
 # 'main' binding mode must be always presented
 # Fallback value (if you omit the key): mode.main.binding = {}
 [mode.main.binding]
-
     # All possible keys:
     # - Letters.        a, b, c, ..., z
     # - Numbers.        0, 1, 2, ..., 9
@@ -121,7 +120,7 @@ automatically-unhide-macos-hidden-apps = false
     alt-7 = 'workspace 7'
     alt-8 = 'workspace 8'
     alt-9 = 'workspace 9'
-#    alt-0 = 'workspace 0'
+    alt-0 = 'workspace 0'
 
     # See: https://nikitabobko.github.io/AeroSpace/commands#move-node-to-workspace
     alt-shift-1 = 'move-node-to-workspace 1'
@@ -133,7 +132,7 @@ automatically-unhide-macos-hidden-apps = false
     alt-shift-7 = 'move-node-to-workspace 7'
     alt-shift-8 = 'move-node-to-workspace 8'
     alt-shift-9 = 'move-node-to-workspace 9'
-#    alt-shift-0 = 'move-node-to-workspace 0'
+    alt-shift-0 = 'move-node-to-workspace 0'
 
     # See: https://nikitabobko.github.io/AeroSpace/commands#workspace-back-and-forth
     alt-tab = 'workspace-back-and-forth'
@@ -141,7 +140,7 @@ automatically-unhide-macos-hidden-apps = false
     alt-shift-tab = 'move-workspace-to-monitor --wrap-around next'
 
     # See: https://nikitabobko.github.io/AeroSpace/commands#mode
-    alt-shift-semicolon = 'mode service'
+    # alt-shift-semicolon = 'mode service'
 
 # 'service' binding mode declaration.
 # See: https://nikitabobko.github.io/AeroSpace/guide#binding-modes
@@ -163,27 +162,75 @@ automatically-unhide-macos-hidden-apps = false
     up = 'volume up'
     shift-down = ['volume set 0', 'mode main']
 
-# Main workspaces prefer a physical external display. Secondary workspaces
-# prefer Splitscreen, then Sidecar, and fall back to the built-in display.
+# Monitor assignments use regex patterns matched against monitor descriptions.
+# Run `aerospace list-monitors` to find your monitor names.
+# Support several external monitor setups:
+#   External: MacBook + any of: Alienware AW3425DWM, Alienware AW2725DM,
+#             Samsung Odyssey G75F (ultrawide), or Cooler Master Tempest GP27U
+#             (4K). These are treated identically as the "primary external"
+#             monitor.
+#   Sidecar:  MacBook + iPad via Sidecar/AirPlay (description "Sidecar Display
+#             (AirPlay)"; matched here as "Sidecar Display" since the parens are
+#             regex metacharacters).
+#   Vision Pro: Sidecar Display is the main Mac Virtual Display and Splitscreen
+#               #1 is the secondary display.
+#
+# AeroSpace special monitor identifiers (use in array form, not regex strings):
+#   'main'      = monitor with the macOS menu bar (set in System Settings)
+#   'secondary' = the non-main monitor (only well-defined with 2 monitors)
+#   'built-in'  = MacBook built-in display
+#   1, 2, 3...  = monitors ordered left-to-right
+# Array values are tried in order; the FIRST connected monitor that matches
+# wins. AeroSpace has no explicit conditionals, but ordered lists give the same
+# effect: list the preferred monitor first and the built-in as the fallback.
+#
+# Two rows of workspaces:
+#   MAIN      = 0, 1, 2, 3, 6, 8  -> external if present, else built-in
+#   SECONDARY = 4, 5, 7, 9     -> Splitscreen or Sidecar if present, else built-in
+# So in External mode: main row on the external, secondary row on the built-in.
+# In Sidecar mode: main row on the built-in (the Mac is the main display),
+# secondary row on the Sidecar. Note: AeroSpace can't set the macOS *main*
+# display — do that in System Settings; here "main" just means the main row.
 [workspace-to-monitor-force-assignment]
-    0 = ["AW3425DWM|AW2725DM|Odyssey G75F|GP27U", "main"]
-    1 = ["AW3425DWM|AW2725DM|Odyssey G75F|GP27U", "main"]
-    2 = ["AW3425DWM|AW2725DM|Odyssey G75F|GP27U", "main"]
-    3 = ["AW3425DWM|AW2725DM|Odyssey G75F|GP27U", "main"]
+    # MAIN row (0, 1, 2, 3, 6, 8): primary external if present, otherwise the built-in
+    # (so in Sidecar mode these stay on the Mac, which becomes the main display).
+    0 = ["AW3425DWM|AW2725DM|Odyssey G75F|GP27U", "Built-in Retina Display"]
+    1 = ["AW3425DWM|AW2725DM|Odyssey G75F|GP27U", "Built-in Retina Display"]
+    2 = ["AW3425DWM|AW2725DM|Odyssey G75F|GP27U", "Built-in Retina Display"]
+    3 = ["AW3425DWM|AW2725DM|Odyssey G75F|GP27U", "Built-in Retina Display"]
+    6 = ["AW3425DWM|AW2725DM|Odyssey G75F|GP27U", "Built-in Retina Display"]
+    8 = ["AW3425DWM|AW2725DM|Odyssey G75F|GP27U", "Built-in Retina Display"]
+    # SECONDARY row (4, 5, 7, 9): Splitscreen first, then Sidecar/AirPlay,
+    # otherwise the built-in display.
     4 = ["Splitscreen #1", "Sidecar Display", "Built-in Retina Display"]
     5 = ["Splitscreen #1", "Sidecar Display", "Built-in Retina Display"]
-    6 = ["AW3425DWM|AW2725DM|Odyssey G75F|GP27U", "main"]
     7 = ["Splitscreen #1", "Sidecar Display", "Built-in Retina Display"]
-    8 = ["AW3425DWM|AW2725DM|Odyssey G75F|GP27U", "main"]
     9 = ["Splitscreen #1", "Sidecar Display", "Built-in Retina Display"]
 
 # Bind Apps to Workspaces
+# To see app ids use `osascript -e 'id of app "App Name"'`
 [[on-window-detected]]
     if.app-id = 'om.microsoft.VSCode'
     run = 'move-node-to-workspace 1'
 
 [[on-window-detected]]
+    if.app-id = 'com.todesktop.230313mzl4w4u92'  # Cursor
+    run = 'move-node-to-workspace 1'
+
+[[on-window-detected]]
     if.app-id = 'com.apple.Terminal'
+    run = 'move-node-to-workspace 3'
+
+[[on-window-detected]]
+    if.app-id = 'com.openai.chat'
+    run = 'move-node-to-workspace 3'
+
+[[on-window-detected]]
+    if.app-id = 'com.openai.codex'
+    run = 'move-node-to-workspace 3'
+
+[[on-window-detected]]
+    if.app-id = 'com.anthropic.claudefordesktop'
     run = 'move-node-to-workspace 3'
 
 [[on-window-detected]]
@@ -199,11 +246,11 @@ automatically-unhide-macos-hidden-apps = false
     run = 'move-node-to-workspace 5'
 
 [[on-window-detected]]
-    if.app-id = 'com.duckduckgo.macos.browser'
-    run = 'move-node-to-workspace 5'
+    if.app-id = 'md.obsidian'
+    run = 'move-node-to-workspace 6'
 
 [[on-window-detected]]
-    if.app-id = 'md.obsidian'
+    if.app-id = 'com.adobe.Acrobat.Pro'
     run = 'move-node-to-workspace 6'
 
 [[on-window-detected]]
@@ -219,9 +266,45 @@ automatically-unhide-macos-hidden-apps = false
     run = 'move-node-to-workspace 8'
 
 [[on-window-detected]]
+    if.app-id = 'com.microsoft.teams'
+    run = 'move-node-to-workspace 8'
+
+[[on-window-detected]]
+    if.app-id = 'com.tinyspeck.slackmacgap'
+    run = 'move-node-to-workspace 8'
+
+[[on-window-detected]]
     if.app-id = 'org.whispersystems.signal-desktop'
+    run = 'move-node-to-workspace 8'
+
+[[on-window-detected]]
+    if.app-id = 'net.whatsapp.WhatsApp'
+    run = 'move-node-to-workspace 8'
+
+[[on-window-detected]]
+    if.app-id = 'ch.protonmail.desktop'
+    run = 'move-node-to-workspace 8'
+
+[[on-window-detected]]
+    if.app-id = 'org.mozilla.thunderbird'
+    run = 'move-node-to-workspace 8'
+
+[[on-window-detected]]
+    if.app-id = 'com.microsoft.Outlook'
+    run = 'move-node-to-workspace 8'
+
+[[on-window-detected]]
+    if.app-id = 'com.apple.mail'
     run = 'move-node-to-workspace 8'
 
 [[on-window-detected]]
     if.app-id = 'com.spotify.client'
     run = 'move-node-to-workspace 9'
+
+[[on-window-detected]]
+    if.app-id = 'com.duckduckgo.macos.browser'
+    run = 'move-node-to-workspace 9'
+
+[[on-window-detected]]
+    if.app-id = 'com.conductor.app'
+    run = 'move-node-to-workspace 1'
