@@ -163,17 +163,19 @@ automatically-unhide-macos-hidden-apps = false
     up = 'volume up'
     shift-down = ['volume set 0', 'mode main']
 
-# Multiple Monitor Settings
+# Main workspaces prefer a physical external display. Secondary workspaces
+# prefer Splitscreen, then Sidecar, and fall back to the built-in display.
 [workspace-to-monitor-force-assignment]
-    1 = "2"
-    2 = "3"
-    3 = "3"
-    4 = "2"
-    5 = "4"
-    6 = "4"
-    7 = "1"
-    8 = "2"
-    9 = "1"
+    0 = ["AW3425DWM|AW2725DM|Odyssey G75F|GP27U", "main"]
+    1 = ["AW3425DWM|AW2725DM|Odyssey G75F|GP27U", "main"]
+    2 = ["AW3425DWM|AW2725DM|Odyssey G75F|GP27U", "main"]
+    3 = ["AW3425DWM|AW2725DM|Odyssey G75F|GP27U", "main"]
+    4 = ["Splitscreen #1", "Sidecar Display", "Built-in Retina Display"]
+    5 = ["Splitscreen #1", "Sidecar Display", "Built-in Retina Display"]
+    6 = ["AW3425DWM|AW2725DM|Odyssey G75F|GP27U", "main"]
+    7 = ["Splitscreen #1", "Sidecar Display", "Built-in Retina Display"]
+    8 = ["AW3425DWM|AW2725DM|Odyssey G75F|GP27U", "main"]
+    9 = ["Splitscreen #1", "Sidecar Display", "Built-in Retina Display"]
 
 # Bind Apps to Workspaces
 [[on-window-detected]]
