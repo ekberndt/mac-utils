@@ -218,6 +218,14 @@ automatically-unhide-macos-hidden-apps = false
     run = 'move-node-to-workspace 1'
 
 [[on-window-detected]]
+    if.app-id = 'dev.warp.Warp-Stable'  # Warp
+    run = 'move-node-to-workspace 2'
+
+[[on-window-detected]]
+    if.app-id = 'com.anysphere.sand'  # Grok Bot
+    run = 'move-node-to-workspace 3'
+
+[[on-window-detected]]
     if.app-id = 'com.apple.Terminal'
     run = 'move-node-to-workspace 3'
 
